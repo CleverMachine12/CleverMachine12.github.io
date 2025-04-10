@@ -1,35 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://halles-spectacular-site-16530c.webflow.io/">
-    <script>
-        // 自动跳转主逻辑
-        window.location.href = "https://halles-five-star-site-ed2fad.webflow.io/";
-        
-        // Webflow 徽章移除器（双重保险）
-        document.addEventListener("DOMContentLoaded", () => {
-            const badge = document.querySelector('.w-webflow-badge');
-            badge?.remove(); // 使用可选链操作符提升安全性
-        });
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 预加载优化 -->
+    <link rel="dns-prefetch" href="//halles-five-star-site-ed2fad.webflow.io">
+    <link rel="preconnect" href="https://webflow.com">
+    
+    <!-- 内联关键CSS -->
+    <style>
+        body {
+            font-family: system-ui;
+            text-align: center;
+            padding: 50px 15px 0;
+            margin: 0;
+            background: #f8fafc;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .link-btn {
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 5px;
+            transition: opacity 0.2s;
+        }
+        .link-btn:hover {
+            opacity: 0.9;
+        }
+        #fallback {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
-<body style="font-family: system-ui; text-align: center; padding-top: 50px;">
+<body>
     <div class="container">
-        <p>⏳ 正在跳转到主站...</p>
-        <div style="margin-top: 20px;">
-            <a href="https://halles-spectacular-site-16530c.webflow.io/" 
-               class="link-btn"
-               style="padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px;">
-                立即访问主站
-            </a>
-            <span style="margin: 0 15px; color: #666;">|</span>
-            <a href="https://CleverMachine12.github.io"
-               class="link-btn"
-               style="padding: 10px 20px; background: #4b5563; color: white; text-decoration: none; border-radius: 6px;">
-                备用镜像站
-            </a>
+        <p aria-live="polite">⏳ 正在跳转到主站...</p>
+        
+        <!-- 应急方案容器 -->
+        <div id="fallback">
+            <p style="color: #ef4444;">⚠️ 加载遇到问题，请选择访问方式：</p>
+            <div style="margin-top:15px;">
+                <a href="https://halles-five-star-site-ed2fad.webflow.io/" 
+                   class="link-btn"
+                   style="background:#2563eb;">
+                    立即访问主站
+                </a>
+                <a href="https://CleverMachine12.github.io"
+                   class="link-btn"
+                   style="background:#4b5563;">
+                    备用镜像站
+                </a>
+                <a href="?nojs=1" 
+                   class="link-btn"
+                   style="background:#059669;">
+                    极简文本版
+                </a>
+            </div>
         </div>
     </div>
+
+    <!-- 核心跳转逻辑 -->
+    <script>
+        (function(){
+            const SAFE_REDIRECT_DELAY = 50; // 确保DOM加载的延迟
+            const TARGET_URL = 'https://halles-five-star-site-ed2fad.webflow.io/';
+            
+            setTimeout(() => {
+                // 跳转主逻辑
+                if(performance.navigation.type !== 1) {
+                    window.location.replace(TARGET_URL);
+                }
+                
+                // 微信环境检测
+                const isWeixin = /MicroMessenger/i.test(navigator.userAgent);
+                if(isWeixin && typeof WeixinJSBridge !== 'undefined') {
+                    WeixinJSBridge.invoke('getNetworkType', {}, () => {
+                        // 微信预加载逻辑
+                        const preloadLink = document.createElement('link');
+                        preloadLink.rel = 'preload';
+                        preloadLink.href = TARGET_URL;
+                        document.head.appendChild(preloadLink);
+                    });
+                }
+            }, SAFE_REDIRECT_DELAY);
+        })();
+    </script>
+
+    <!-- 延迟加载脚本 -->
+    <script defer>
+        // 性能监测
+        window.addEventListener('load', () => {
+            const [entry] = performance.getEntriesByType("navigation");
+            console.log('TTFB:', (entry.responseStart - entry.startTime).toFixed(1), 'ms');
+        });
+
+        // 应急方案触发器
+        setTimeout(() => {
+            document.getElementById('fallback').style.display = 'block';
+        }, 5000);
+
+        // 徽章移除（延迟执行）
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new MutationObserver(mutations => {
+                const badge = document.querySelector('.w-webflow-badge');
+                if(badge) {
+                    badge.remove();
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
 </body>
 </html>
