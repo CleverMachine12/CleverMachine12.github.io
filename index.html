@@ -3,124 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 预加载优化 -->
     <link rel="dns-prefetch" href="//halles-five-star-site-ed2fad.webflow.io">
-    <link rel="preconnect" href="https://webflow.com">
     
-    <!-- 内联关键CSS -->
+    <!-- 精简样式 -->
     <style>
         body {
             font-family: system-ui;
-            text-align: center;
-            padding: 50px 15px 0;
+            padding: 30vh 15px 0;
             margin: 0;
             background: #f8fafc;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+            min-height: 100vh;
         }
         .link-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: #2563eb;
             color: white;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
             display: inline-block;
-            margin: 5px;
-            transition: opacity 0.2s;
+            margin: 8px;
+            transition: transform 0.1s;
         }
-        .link-btn:hover {
-            opacity: 0.9;
+        .link-btn:active {
+            transform: scale(0.96);
         }
         #fallback {
             display: none;
-            margin-top: 30px;
             padding: 20px;
             background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <p aria-live="polite">⏳ 正在跳转到主站...</p>
-        
-        <!-- 应急方案容器 -->
-        <div id="fallback">
-            <p style="color: #ef4444;">⚠️ 加载遇到问题，请选择访问方式：</p>
-            <div style="margin-top:15px;">
-                <a href="https://halles-five-star-site-ed2fad.webflow.io/" 
-                   class="link-btn"
-                   style="background:#2563eb;">
-                    立即访问主站
-                </a>
-                <a href="https://CleverMachine12.github.io"
-                   class="link-btn"
-                   style="background:#4b5563;">
-                    备用镜像站
-                </a>
-                <a href="?nojs=1" 
-                   class="link-btn"
-                   style="background:#059669;">
-                    极简文本版
-                </a>
-            </div>
+    <!-- 移除跳转提示文字 -->
+    <div id="fallback">
+        <div style="margin-bottom:20px">
+            <a href="https://halles-five-star-site-ed2fad.webflow.io/" 
+               class="link-btn"
+               style="background:#2563eb;">
+                访问主站
+            </a>
+            <a href="https://CleverMachine12.github.io"
+               class="link-btn"
+               style="background:#4b5563;">
+                备用镜像
+            </a>
         </div>
     </div>
 
-    <!-- 核心跳转逻辑 -->
+    <!-- 增强版徽章移除脚本 -->
     <script>
         (function(){
-            const SAFE_REDIRECT_DELAY = 50; // 确保DOM加载的延迟
-            const TARGET_URL = 'https://halles-five-star-site-ed2fad.webflow.io/';
-            
-            setTimeout(() => {
-                // 跳转主逻辑
-                if(performance.navigation.type !== 1) {
-                    window.location.replace(TARGET_URL);
-                }
-                
-                // 微信环境检测
-                const isWeixin = /MicroMessenger/i.test(navigator.userAgent);
-                if(isWeixin && typeof WeixinJSBridge !== 'undefined') {
-                    WeixinJSBridge.invoke('getNetworkType', {}, () => {
-                        // 微信预加载逻辑
-                        const preloadLink = document.createElement('link');
-                        preloadLink.rel = 'preload';
-                        preloadLink.href = TARGET_URL;
-                        document.head.appendChild(preloadLink);
-                    });
-                }
-            }, SAFE_REDIRECT_DELAY);
+            // 即时执行移除操作
+            const checkAndRemoveBadge = () => {
+                const badges = [
+                    '.w-webflow-badge', // Webflow官方徽章
+                    '.powered-by-webflow', // 备用类名
+                    'a[href*="webflow.com"]' // 链接匹配
+                ].join(',');
+
+                document.querySelectorAll(badges).forEach(element => {
+                    element.remove();
+                });
+            };
+
+            // 三重移除保障机制
+            checkAndRemoveBadge(); // DOM加载前尝试
+            document.addEventListener('DOMContentLoaded', checkAndRemoveBadge);
+            new MutationObserver(checkAndRemoveBadge)
+                .observe(document.body, { 
+                    childList: true, 
+                    subtree: true,
+                    attributes: true 
+                });
         })();
     </script>
 
-    <!-- 延迟加载脚本 -->
-    <script defer>
-        // 性能监测
-        window.addEventListener('load', () => {
-            const [entry] = performance.getEntriesByType("navigation");
-            console.log('TTFB:', (entry.responseStart - entry.startTime).toFixed(1), 'ms');
-        });
+    <!-- 跳转逻辑优化 -->
+    <script>
+        setTimeout(() => {
+            window.location.replace('https://halles-five-star-site-ed2fad.webflow.io/');
+        }, 50);
 
-        // 应急方案触发器
+        // 应急方案显示
         setTimeout(() => {
             document.getElementById('fallback').style.display = 'block';
-        }, 5000);
-
-        // 徽章移除（延迟执行）
-        document.addEventListener('DOMContentLoaded', () => {
-            const observer = new MutationObserver(mutations => {
-                const badge = document.querySelector('.w-webflow-badge');
-                if(badge) {
-                    badge.remove();
-                    observer.disconnect();
-                }
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-        });
+        }, 1500);
     </script>
 </body>
 </html>
