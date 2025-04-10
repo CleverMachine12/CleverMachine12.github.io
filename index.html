@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <meta http-equiv="refresh" content="0; url=https://halles-spectacular-site-16530c.webflow.io/">
     <script>
-        // 自动跳转逻辑
-        window.location.href = "https://halles-five-star-site-ed2fad.webflow.io//";
+        // 自动跳转主逻辑
+        window.location.href = "https://halles-spectacular-site-16530c.webflow.io/";
         
-        // 移除 Webflow 徽章（双保险机制）
-        document.addEventListener("DOMContentLoaded", function() {
+        // Webflow 徽章移除器（双重保险）
+        document.addEventListener("DOMContentLoaded", () => {
             const badge = document.querySelector('.w-webflow-badge');
-            if (badge) badge.remove();
+            badge?.remove(); // 使用可选链操作符提升安全性
         });
     </script>
 </head>
-<body>
-    <p>正在跳转到目标网站...<a href="https://halles-spectacular-site-16530c.webflow.io/">立即访问</a></p>
+<body style="font-family: system-ui; text-align: center; padding-top: 50px;">
+    <div class="container">
+        <p>⏳ 正在跳转到主站...</p>
+        <div style="margin-top: 20px;">
+            <a href="https://halles-spectacular-site-16530c.webflow.io/" 
+               class="link-btn"
+               style="padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px;">
+                立即访问主站
+            </a>
+            <span style="margin: 0 15px; color: #666;">|</span>
+            <a href="https://CleverMachine12.github.io"
+               class="link-btn"
+               style="padding: 10px 20px; background: #4b5563; color: white; text-decoration: none; border-radius: 6px;">
+                备用镜像站
+            </a>
+        </div>
+    </div>
 </body>
 </html>
